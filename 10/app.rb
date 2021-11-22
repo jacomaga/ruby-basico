@@ -10,9 +10,19 @@ class Translator
       text: text,
       lang: "#{language}-#{translate}"
     }
-    RestClient.get(@@apiURL, {params: params} )
+    response = RestClient.get(@@apiURL, {params: params} )
+    translation = JSON.parse(response)['text'].join(",")
+    saveTranslation(translation)
+
+    puts "The traslate is: " + JSON.parse(response)['text'].join(",")
   end
 
+  def self.saveTranslation(translation)
+    filename = "#{Time.now.strftime "%Y_%m_%d %Hhrs%Mmins"}.txt"
+    File.open(filename, "w") do |f|
+      f.write(translation)
+    end
+  end
 end
 
 print "Enter your language: "
@@ -21,6 +31,6 @@ print "Enter the language to translate: "
 translate = gets.chomp
 puts "Enter the text to translate:"
 text = gets.chomp
-response = Translator.translate(text, language, translate)
+Translator.translate(text, language, translate)
 
-puts "The traslate is: " + JSON.parse(response)['text'].join(",")
+
